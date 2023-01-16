@@ -11,7 +11,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.findNavController
 import com.aiglesiaspubill.androidsuperpoderes.ui.components.LoginScreen
+import com.aiglesiaspubill.androidsuperpoderes.ui.herolist.HeroListScreen
 import com.aiglesiaspubill.androidsuperpoderes.ui.theme.AndroidSuperpoderesTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,11 +27,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             AndroidSuperpoderesTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                   LoginScreen()
+                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background)
+                {
+                    val navController = rememberNavController()
+
+                    NavHost(navController = navController, startDestination = "login") {
+                        composable(route = "login") {
+                            LoginScreen()
+                        }
+                    }
                 }
             }
         }
