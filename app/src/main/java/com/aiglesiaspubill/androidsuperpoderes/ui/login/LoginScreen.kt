@@ -15,9 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.autofill.AutofillType
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -28,17 +26,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.aiglesiaspubill.androidsuperpoderes.R
+import com.aiglesiaspubill.androidsuperpoderes.ui.login.LoginViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Preview(showSystemUi = true)
 @Composable
 fun LoginScreen() {
+    val viewModel = hiltViewModel<LoginViewModel>()
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         AppLogo()
-        LoginForm()
+        LoginForm(viewModel = viewModel)
     }
 }
 
@@ -63,46 +65,54 @@ fun AppLogo() {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
-@Preview(showBackground = true)
 @Composable
-fun LoginForm(extended: Boolean = true) {
+fun LoginForm(extended: Boolean = true, viewModel: LoginViewModel) {
     Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        var email by rememberSaveable() {
+        var email by rememberSaveable {
+            mutableStateOf("")
+        }
+        var password by rememberSaveable {
             mutableStateOf("")
         }
 
-        var password by rememberSaveable() {
-            mutableStateOf("")
-        }
-
-
-        FormField("Email", Icons.Default.Email)
+        FormField(value = email, onValueChange = {
+            email = it
+        }, placeholder = "Email", leadingIcon = Icons.Default.Email)
         if (extended) {
-            FormField("Password", Icons.Default.Lock, trailingIcon = Icons.Default.Visibility)
+            FormField(
+                value = password, onValueChange = {
+                    password = it
+                },
+                placeholder = "Password",
+                leadingIcon = Icons.Default.Password,
+                trailingIcon = Icons.Default.Visibility
+            )
         }
-        LoginButton()
+        LoginButton {
+            viewModel.login(email, password)
+        }
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun FormFieldPreview() {
-    FormField(placeholder = "Password", leadingIcon = Icons.Default.Lock, trailingIcon = Icons.Default.VisibilityOff, true)
+fun LoginButton(onClick: () -> Unit) {
+    Button(onClick = onClick, modifier = Modifier.padding(8.dp)) {
+        Text(text = "Login")
+    }
 }
 
 @Composable
-fun FormField(placeholder: String, leadingIcon: ImageVector, trailingIcon: ImageVector? = null, isPassword: Boolean= false) {
-    var textValue by rememberSaveable {
-        mutableStateOf("")
-    }
-
+fun FormField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    leadingIcon: ImageVector,
+    trailingIcon: ImageVector? = null,
+    isPassword: Boolean = false,
+) {
     TextField(
-        value = textValue,
-        onValueChange = {
-            textValue = it
-        },
-
+        value = value,
+        onValueChange = onValueChange,
         modifier = Modifier.fillMaxWidth(),
         leadingIcon = {
             Icon(imageVector = leadingIcon, contentDescription = leadingIcon.name)
@@ -123,11 +133,20 @@ fun FormFieldPlaceHolder(placeholder: String) {
     Text(text = placeholder)
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun LoginButton() {
-    Button(onClick = { }, modifier = Modifier.padding(8.dp)) {
-        Text(text = "Login")
-    }
+fun FormFieldPreview() {
+    FormField(
+        "Email",
+        {},
+        placeholder = "Password",
+        leadingIcon = Icons.Default.Lock,
+        trailingIcon = Icons.Default.VisibilityOff,
+        true,
+    )
 }
+
+
+
+
 

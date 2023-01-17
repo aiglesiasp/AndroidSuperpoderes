@@ -7,11 +7,7 @@ import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(private val remoteDataSource: RemoteDataSource): Repository {
 
-    companion object {
-        val TOKEN = "TOKEN"
-    }
-
     override suspend fun login(email: String, password: String) {
-        remoteDataSource.getToken()
+        remoteDataSource.login(email, password)
     }
 }
