@@ -31,7 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun LoginScreen(viewModel: LoginViewModel = hiltViewModel(), onNavigateToList: () -> (Unit) = {}) {
 
-    val success = viewModel.loginSucces.observeAsState(false)
+    val success = viewModel.loginSucces.collectAsState()
 
     LaunchedEffect(key1 = success.value) {
         if(success.value) {

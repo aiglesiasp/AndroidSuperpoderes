@@ -10,6 +10,8 @@ import com.aiglesiaspubill.androidsuperpoderes.data.RepositoryImpl
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Credentials
@@ -19,8 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(private val repository: RepositoryImpl, private val sharedPreferences: SharedPreferences): ViewModel() {
 
-    private val _loginSuccess = MutableLiveData<Boolean>()
-    val loginSucces: LiveData<Boolean> get() = _loginSuccess
+    private val _loginSuccess = MutableStateFlow(false)
+    val loginSucces: StateFlow<Boolean> get() = _loginSuccess
 
     private fun setValueOnMainThread(value: Boolean) {
         viewModelScope.launch(Dispatchers.Main) {
