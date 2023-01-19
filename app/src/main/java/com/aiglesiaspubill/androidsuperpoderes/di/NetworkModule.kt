@@ -15,12 +15,24 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    private val TAG_TOKEN = "eyJraWQiOiJwcml2YXRlIiwidHlwIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJpZGVudGlmeSI6IkM3QTZBRENFLUM3MjUtNDlFRi04MEFDLTMxNDVCODkxQzg5NCIsImV4cGlyYXRpb24iOjY0MDkyMjExMjAwLCJlbWFpbCI6ImFpZ2xlc2lhc3B1YmlsbEBnbWFpbC5jb20ifQ.NjSKR-UPBTVSNIKunr8QPjwUiZJcnUObOv0pYG28Avc"
+    private const val TAG_TOKEN =
+        "eyJraWQiOiJwcml2YXRlIiwidHlwIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJpZGVudGlmeSI6IkM3QTZBRENFLUM3MjUtNDlFRi04MEFDLTMxNDVCODkxQzg5NC" +
+                "IsImV4cGlyYXRpb24iOjY0MDkyMjExMjAwLCJlbWFpbCI6ImFpZ2xlc2lhc3B1YmlsbEBnbWFpbC5jb20ifQ.NjSKR" +
+                "-UPBTVSNIKunr8QPjwUiZJcnUObOv0pYG28Avc"
 
+    //NOS DA EL MOSHI
+    @Provides
+    fun provideMoshi(): Moshi {
+        val moshi = Moshi.Builder()
+            .addLast(KotlinJsonAdapterFactory())
+            .build()
+        return moshi
+    }
     //NOS DA EL SHAREDPREFERENCES
     @Provides
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
@@ -51,11 +63,11 @@ object NetworkModule {
             .authenticator { _, response ->
                 if(response.request.url.encodedPath.contains("api/auth/login")) {
                     response.request.newBuilder()
-                        .header("Authorization", "${sharedPreferences.getString("CREDENTIAL", null)}")
+                        //.addHeader("Authorization", "${sharedPreferences.getString("CREDENTIAL", null)}")
                         .build()
                 } else {
                     response.request.newBuilder()
-                        .header("Authorization", "Bearer ${sharedPreferences.getString("TOKEN", null)}")
+                        //.addHeader("Authorization", "Bearer ${sharedPreferences.getString("TOKEN", null)}")
                         .build()
                 }
             }
@@ -64,17 +76,9 @@ object NetworkModule {
         return okHttpClient
     }
 
-    //NOS DA EL MOSHI
-    @Provides
-    fun provideMoshi(): Moshi {
-        val moshi = Moshi.Builder()
-            .addLast(KotlinJsonAdapterFactory())
-            .build()
-        return moshi
-    }
-
     //NOS DA EL RETROFIT
     @Provides
+    @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit {
         var retrofit = Retrofit.Builder()
             .baseUrl("https://dragonball.keepcoding.education")
@@ -86,6 +90,7 @@ object NetworkModule {
 
     //NOS DA EL API
     @Provides
+    @Singleton
     fun provideAPI(retrofit: Retrofit) : DragonBallApi {
         var api: DragonBallApi = retrofit.create(DragonBallApi::class.java)
         return api

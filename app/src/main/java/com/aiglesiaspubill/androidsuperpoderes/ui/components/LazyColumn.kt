@@ -16,6 +16,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.aiglesiaspubill.androidsuperpoderes.R
+import com.aiglesiaspubill.androidsuperpoderes.domain.Hero
+import coil.compose.rememberAsyncImagePainter
 
 @Preview(showBackground = true)
 @Composable
@@ -45,12 +47,12 @@ fun MyLazyColumn() {
 
 @Preview(showBackground = true)
 @Composable
-fun MyLazyColumn2() {
-    val heros = listOf("Goku", "Vegeta", "Celula", "Goku", "Vegeta", "Celula", "Goku", "Vegeta", "Celula")
+fun MyLazyColumn2(heros: List<Hero> = emptyList()) {
+
 
     LazyColumn(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally,) {
-        itemsIndexed(heros) { index, hero ->
-            Item("Position $index with $hero")
+        itemsIndexed(heros) { _, hero ->
+            Item(hero.name, hero.photo)
         }
 
     }
@@ -59,10 +61,10 @@ fun MyLazyColumn2() {
 
 @Preview
 @Composable
-fun Item (hero: String = "Goku") {
-    Column() {
+fun Item (hero: String = "Goku", photo: String = "") {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
         Image(
-            painter = painterResource(id = R.drawable.compose),
+            painter = rememberAsyncImagePainter(model = photo),
             contentDescription = "Compose ICON",
             modifier = Modifier.size(100.dp)
         )

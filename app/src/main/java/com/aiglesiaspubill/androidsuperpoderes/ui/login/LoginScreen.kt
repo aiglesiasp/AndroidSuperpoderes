@@ -9,11 +9,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,8 +29,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Preview(showSystemUi = true)
 @Composable
-fun LoginScreen() {
-    val viewModel = hiltViewModel<LoginViewModel>()
+fun LoginScreen(viewModel: LoginViewModel = hiltViewModel(), onNavigateToList: () -> (Unit) = {}) {
+
+    val success = viewModel.loginSucces.observeAsState(false)
+
+    LaunchedEffect(key1 = success.value) {
+        if(success.value) {
+            onNavigateToList()
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -75,18 +80,16 @@ fun LoginForm(extended: Boolean = true, viewModel: LoginViewModel) {
             mutableStateOf("")
         }
 
-        FormField(value = email, onValueChange = {
-            email = it
-        }, placeholder = "Email", leadingIcon = Icons.Default.Email)
+        FormField(
+            value = email,
+            onValueChange = { email = it },
+            placeholder = "Email")
+
         if (extended) {
             FormField(
-                value = password, onValueChange = {
-                    password = it
-                },
-                placeholder = "Password",
-                leadingIcon = Icons.Default.Password,
-                trailingIcon = Icons.Default.Visibility
-            )
+                value = password,
+                onValueChange = { password = it },
+                placeholder = "Password")
         }
         LoginButton {
             viewModel.login(email, password)
@@ -106,20 +109,12 @@ fun FormField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
-    leadingIcon: ImageVector,
-    trailingIcon: ImageVector? = null,
     isPassword: Boolean = false,
 ) {
     TextField(
         value = value,
         onValueChange = onValueChange,
         modifier = Modifier.fillMaxWidth(),
-        leadingIcon = {
-            Icon(imageVector = leadingIcon, contentDescription = leadingIcon.name)
-        },
-        trailingIcon = {
-            trailingIcon?.let { Icon(imageVector = it, contentDescription = it.name) }
-        },
         placeholder = {
             FormFieldPlaceHolder(placeholder)
         },
@@ -140,8 +135,6 @@ fun FormFieldPreview() {
         "Email",
         {},
         placeholder = "Password",
-        leadingIcon = Icons.Default.Lock,
-        trailingIcon = Icons.Default.VisibilityOff,
         true,
     )
 }
