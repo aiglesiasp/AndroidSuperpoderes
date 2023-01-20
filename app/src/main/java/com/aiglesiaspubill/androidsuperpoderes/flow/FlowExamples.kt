@@ -274,4 +274,68 @@ import kotlinx.coroutines.flow.*
 
             Log.d("FLOW", intFlow)
         }
+
+        suspend fun flowExampleWithZip(){
+            val heroList = listOf(
+                "Maestro Roshi",
+                "Mr. Satán",
+                "Krilin",
+                "Goku",
+                "Vegeta",
+                "Bulma",
+                "Freezer",
+                "Beerus",
+                "Piccolo",
+                "Kaito",
+                "Raditz",
+                "Célula",
+                "Trunks del Futuro",
+                "Quake (Daisy Johnson)",
+                "starry night",
+                "San Goku",
+                "Gohan Prime",
+                "Broly",
+            )
+
+            val flow1 = heroList.asFlow()
+            val flow2 = heroList.asFlow().map { it.length }.take(4)
+
+            flow1.zip(flow2){ it1, it2 ->
+                "$it1 $it2"
+            }.collect{
+                Log.d("FLOW", it)
+            }
+        }
+
+        suspend fun flowExampleWithCombine(){
+            val heroList = listOf(
+                "Maestro Roshi",
+                "Mr. Satán",
+                "Krilin",
+                "Goku",
+                "Vegeta",
+                "Bulma",
+                "Freezer",
+                "Beerus",
+                "Piccolo",
+                "Kaito",
+                "Raditz",
+                "Célula",
+                "Trunks del Futuro",
+                "Quake (Daisy Johnson)",
+                "starry night",
+                "San Goku",
+                "Gohan Prime",
+                "Broly",
+            )
+
+            val flow1 = heroList.asFlow().onEach { delay(2000) }
+            val flow2 = heroList.asFlow().map { it.length }.onEach { delay(1000) }
+
+            flow1.combine(flow2){ it1, it2 ->
+                "$it1 $it2"
+            }.collect{
+                Log.d("FLOW", it)
+            }
+        }
     }

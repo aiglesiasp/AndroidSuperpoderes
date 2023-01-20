@@ -4,6 +4,7 @@ import com.aiglesiaspubill.androidsuperpoderes.data.remote.RemoteDataSource
 import com.aiglesiaspubill.androidsuperpoderes.data.remote.RemoteDataSourceImpl
 import com.aiglesiaspubill.androidsuperpoderes.domain.Hero
 import com.aiglesiaspubill.androidsuperpoderes.domain.Repository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,7 +19,7 @@ class RepositoryImpl @Inject constructor(private val remoteDataSource: RemoteDat
         return token.isNotBlank()
     }
 
-    override suspend fun getHeros(): List<Hero> {
+    override suspend fun getHeros(): Flow<List<Hero>> {
         return remoteDataSource.getHeros(token)
     }
 }
